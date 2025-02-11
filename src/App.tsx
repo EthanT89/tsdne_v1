@@ -12,7 +12,7 @@ function App() {
   };
 
   return (
-    <div className="bg">
+    <div className="bg-slate-900">
       <Title />
       {alertVisible && (
         <Alert onClose={() => setAlertVisibility(false)}>
