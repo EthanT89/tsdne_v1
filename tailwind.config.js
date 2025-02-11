@@ -1,10 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"], // Ensure Tailwind scans all relevant files
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}" // Ensures Tailwind scans all your components
+  ],
   theme: {
     extend: {
       fontFamily: {
-        annie: ["'Annie Use Your Telescope'", "cursive"], // Add custom font
+        annie: ["'Annie Use Your Telescope'", "cursive"], // Fix incorrect syntax
       },
     },
   },

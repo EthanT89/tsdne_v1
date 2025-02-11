@@ -23,9 +23,9 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-between min-h-screen bg-black text-white">
+    <div className="flex flex-col min-h-screen w-screen bg-gradient-to-b from-gray-900 to-black text-white font-annie">
       <Title />
-      <div className="flex flex-col items-center space-y-4 flex-grow justify-center">
+      <div className="flex flex-col items-center space-y-4 mt-[-70px] flex-grow justify-center">
         <OutputBox story={messages} />
         <UserInput input={input} setInput={setInput} onSubmit={sendMessage} />
       </div>
