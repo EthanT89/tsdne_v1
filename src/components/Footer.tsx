@@ -1,13 +1,13 @@
 const Footer = () => {
   return (
-    <footer className="absolute bottom-4 flex justify-between w-full px-6 text-white">
+    <footer className="bg-transparent absolute bottom-4 flex justify-between w-full px-6 text-white">
       <a
         href="https://www.linkedin.com/in/ethan-thornberg/"
         target="_blank"
         rel="noopener noreferrer"
       >
         <img
-          src="/linkedin.svg"
+          src="/github-size-48.svg"
           alt="LinkedIn"
           className="h-8 w-8 opacity-75 hover:opacity-100"
         />

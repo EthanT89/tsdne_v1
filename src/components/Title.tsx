@@ -1,6 +1,6 @@
 const Title = () => {
   return (
-    <h1 className="text-4xl font-light text-white text-center">
+    <h1 className="text-4xl font-light text-white text-center font-annie">
       This Story Does Not Exist
     </h1>
   );
