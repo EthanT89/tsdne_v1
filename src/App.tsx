@@ -10,32 +10,33 @@ export default function App() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<{ role: string; text: string }[]>([
     {
-      role: "Player",
+      role: "Dev",
       text: "Welcome to This Story Does Not Exist, where every choice you make writes a story only you can tell. You are both the reader and the written. \n \n Hi, I’m Ethan Thornberg! I built this because I believe storytelling should be as limitless as your imagination. This project is my way of combining AI and creativity to build something truly unique. Check out the links below to see what else I’m working on—I’d love to connect! \n \n To begin, describe your world. It could be a bustling city, a quiet forest, or something entirely new. Wherever you take it, the adventure is yours to create. \n \n What’s next?",
     },
   ]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-  
+
     const newMessage = { role: "player", text: input };
-  
+    setMessages([...messages, newMessage]); // Add user input to chat
+
     try {
       const res = await fetch("http://localhost:5000/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ input }),
       });
-  
+
       const data = await res.json();
       const aiResponse = { role: "ai", text: data.response };
-  
-      setMessages([...messages, newMessage, aiResponse]);
-      setInput("");
-  
+
+      setMessages((prevMessages) => [...prevMessages, aiResponse]); // Append AI response
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error communicating with backend:", error);
     }
+
+    setInput(""); // Clear input field
   };
   
 
