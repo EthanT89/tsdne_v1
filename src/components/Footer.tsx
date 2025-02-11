@@ -2,7 +2,7 @@ const Footer = () => {
   return (
     <footer className="absolute bottom-4 flex justify-between w-full px-6 text-white">
       <a
-        href="https://linkedin.com/ethan-thornberg/"
+        href="https://www.linkedin.com/in/ethan-thornberg/"
         target="_blank"
         rel="noopener noreferrer"
       >
