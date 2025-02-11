@@ -17,7 +17,7 @@ export default function App() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const streamSpeed = 25; // <-- Adjustable streaming speed in milliseconds
+  const streamSpeed = 1; //  Adjustable streaming speed
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -25,7 +25,7 @@ export default function App() {
     setError(null);
 
     const newMessage = { role: "player", text: input };
-    setMessages((prev) => [...prev, newMessage]); // Add player's input immediately
+    setMessages((prev) => [...prev, newMessage]); // Show user input immediately
     setInput(""); // Clear input immediately
 
     try {
@@ -42,24 +42,35 @@ export default function App() {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let aiMessage = { role: "ai", text: "" };
+      setMessages((prev) => [...prev, aiMessage]); // Placeholder for AI response
 
-      setMessages((prev) => [...prev, aiMessage]); // Add placeholder for AI response
+      let fullText = ""; // Store final formatted response
+      let isComplete = false;
 
-      while (true) {
+      while (!isComplete) {
         const { done, value } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        for (const char of chunk) {
-          aiMessage.text += char;
-          setMessages((prev) => {
-            const updated = [...prev];
-            updated[updated.length - 1] = { ...aiMessage }; // Update last message dynamically
-            return updated;
-          });
-          await new Promise((resolve) => setTimeout(resolve, streamSpeed)); // Slow down typing speed
+
+        // Check if we received the final formatted message
+        if (chunk.includes("<END>")) {
+          fullText = chunk.replace("<END>", "").replace(/ <BREAK> /g, "\n\n");
+          isComplete = true;
+        } else {
+          fullText += chunk;
         }
+
+        // Update UI dynamically
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { ...aiMessage, text: fullText };
+          return updated;
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, streamSpeed)); // Simulate typing effect
       }
+
     } catch (err) {
       console.error("API Error:", err);
       setError("The AI is currently unavailable. Please try again later.");
