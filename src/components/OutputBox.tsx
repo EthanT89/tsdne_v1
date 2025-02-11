@@ -1,10 +1,26 @@
+import { useEffect, useRef } from "react";
+
 interface OutputBoxProps {
   story: { role: string; text: string }[];
+  error?: string | null;
 }
 
-const OutputBox = ({ story }: OutputBoxProps) => {
+const OutputBox = ({ story, error }: OutputBoxProps) => {
+  const outputRef = useRef<HTMLDivElement>(null); // Ref for scrolling
+
+  useEffect(() => {
+    if (outputRef.current) {
+      outputRef.current.scrollTop = outputRef.current.scrollHeight;
+    }
+  }, [story]); // Run effect every time `story` updates
+
   return (
-    <div className="w-3/4 bg-gray-800 p-6 rounded-lg shadow max-h-[50vh] overflow-y-auto text-white opacity-80 text-center font-annie">
+    <div
+      ref={outputRef} // Attach ref to div
+      className="w-3/4 bg-gray-800 p-6 rounded-lg shadow max-h-[50vh] overflow-y-auto text-white opacity-80 text-center font-annie custom-scrollbar"
+    >
+      {error && <p className="text-red-400 font-bold">{error}</p>}
+
       {story.map((entry, index) => (
         <div
           key={index}
@@ -16,9 +32,7 @@ const OutputBox = ({ story }: OutputBoxProps) => {
           {entry.text
             .split(/\n\s*\n/) // Splits by double newlines for paragraphs
             .map((paragraph, i) => (
-              <p key={i} className="mb-3">
-                {paragraph}
-              </p>
+              <p key={i} className="mb-3">{paragraph}</p>
             ))}
         </div>
       ))}

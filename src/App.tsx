@@ -11,41 +11,69 @@ export default function App() {
   const [messages, setMessages] = useState<{ role: string; text: string }[]>([
     {
       role: "Dev",
-      text: "Welcome to This Story Does Not Exist, where every choice you make writes a story only you can tell. You are both the reader and the written. \n \n Hi, I’m Ethan Thornberg! I built this because I believe storytelling should be as limitless as your imagination. This project is my way of combining AI and creativity to build something truly unique. Check out the links below to see what else I’m working on—I’d love to connect! \n \n To begin, describe your world. It could be a bustling city, a quiet forest, or something entirely new. Wherever you take it, the adventure is yours to create. \n \n What’s next?",
+      text: "Welcome to This Story Does Not Exist, where every choice you make writes a story only you can tell. You are both the reader and the written.\n\nHi, I’m Ethan Thornberg! I built this because I believe storytelling should be as limitless as your imagination. This project is my way of combining AI and creativity to build something truly unique. Check out the links below to see what else I’m working on—I’d love to connect!\n\nTo begin, describe your world. It could be a bustling city, a quiet forest, or something entirely new. Wherever you take it, the adventure is yours to create.\n\nWhat’s next?",
     },
   ]);
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const streamSpeed = 25; // <-- Adjustable streaming speed in milliseconds
+
   const sendMessage = async () => {
     if (!input.trim()) return;
+    setLoading(true);
+    setError(null);
 
     const newMessage = { role: "player", text: input };
-    setMessages([...messages, newMessage]); // Add user input to chat
+    setMessages((prev) => [...prev, newMessage]); // Add player's input immediately
+    setInput(""); // Clear input immediately
 
     try {
-      const res = await fetch("http://localhost:5000/generate", {
+      const response = await fetch("http://localhost:5000/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ input }),
       });
 
-      const data = await res.json();
-      const aiResponse = { role: "ai", text: data.response };
+      if (!response.body) {
+        throw new Error("No response body received.");
+      }
 
-      setMessages((prevMessages) => [...prevMessages, aiResponse]); // Append AI response
-    } catch (error) {
-      console.error("Error communicating with backend:", error);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let aiMessage = { role: "ai", text: "" };
+
+      setMessages((prev) => [...prev, aiMessage]); // Add placeholder for AI response
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        for (const char of chunk) {
+          aiMessage.text += char;
+          setMessages((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1] = { ...aiMessage }; // Update last message dynamically
+            return updated;
+          });
+          await new Promise((resolve) => setTimeout(resolve, streamSpeed)); // Slow down typing speed
+        }
+      }
+    } catch (err) {
+      console.error("API Error:", err);
+      setError("The AI is currently unavailable. Please try again later.");
+    } finally {
+      setLoading(false);
     }
-
-    setInput(""); // Clear input field
   };
-  
 
   return (
     <div className="flex flex-col min-h-screen w-screen bg-gradient-to-b from-gray-900 to-black text-white font-annie">
       <Title />
       <div className="flex flex-col items-center space-y-4 mt-[-70px] flex-grow justify-center">
-        <OutputBox story={messages} />
-        <UserInput input={input} setInput={setInput} onSubmit={sendMessage} />
+        <OutputBox story={messages} error={error} />
+        <UserInput input={input} setInput={setInput} onSubmit={sendMessage} isLoading={loading} />
       </div>
       <Footer />
     </div>
