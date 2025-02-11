@@ -1,50 +1,89 @@
-# React + TypeScript + Vite
+# 📝 This Story Does Not Exist
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**An AI-powered interactive storytelling experience where the story is shaped by your choices.**
 
-Currently, two official plugins are available:
+## 🚀 About the Project
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This is a dynamic, text-based adventure game where AI generates a unique narrative based on user input. The game evolves in real-time, ensuring every playthrough is different.
 
-## Expanding the ESLint configuration
+## 🛠 Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **Frontend**: Vite + React + TypeScript + Tailwind CSS
+- **Backend**: Flask + OpenAI API + PostgreSQL
+- **Infrastructure**: AWS / Vercel (for deployment)
 
-- Configure the top-level `parserOptions` property like this:
+## 🎮 Features
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- AI-generated narratives that adapt to player choices
+- Persistent game state tracking using PostgreSQL
+- Clean, immersive UI with Tailwind CSS
+- Fast development and performance with Vite
+
+## 📂 Project Structure
+
+```
+this-story-does-not-exist/
+├── backend/             # Flask API for AI processing
+├── frontend/            # Vite + React frontend
+│   ├── src/
+│   │   ├── components/  # Reusable UI components
+│   │   ├── pages/       # Game pages and routing
+│   │   ├── styles/      # Tailwind CSS styles
+├── database/            # PostgreSQL setup
+├── README.md            # Project documentation
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## 🔧 Installation & Setup
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### **1️⃣ Clone the Repository**
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+ git clone https://github.com/your-username/this-story-does-not-exist.git
+ cd this-story-does-not-exist
 ```
+
+### **2️⃣ Set Up the Backend**
+
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # Mac/Linux
+venv\Scripts\activate    # Windows
+pip install -r requirements.txt
+```
+
+- Set up your **.env** file with `OPENAI_API_KEY` and database credentials.
+- Start the Flask server:
+
+```bash
+python app.py
+```
+
+### **3️⃣ Set Up the Frontend**
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+- Open `http://localhost:5173` in your browser.
+
+## 🛠 Roadmap
+
+- [ ] Expand AI context retention
+- [ ] Multiplayer mode (optional)
+- [ ] Save & load player progress
+- [ ] Theming & UI improvements
+
+## 📜 License
+
+This project is licensed under the MIT License.
+
+## 🙌 Contributing
+
+Interested in contributing? Feel free to open an issue or submit a pull request!
+
+## 📬 Contact
+
+**Ethan Thornberg** – [LinkedIn](https://www.linkedin.com/in/ethan-thornberg/) – [GitHub](https://github.com/EthanT89)
