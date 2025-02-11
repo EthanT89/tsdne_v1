@@ -4,7 +4,7 @@ interface OutputBoxProps {
 
 const OutputBox = ({ story }: OutputBoxProps) => {
   return (
-    <div className="w-3/4 bg-gray-800 p-4 rounded-lg shadow max-h-[50vh] overflow-y-auto text-white text-center font-extrabold font-annie">
+    <div className="w-3/4 bg-gray-800 p-4 rounded-lg shadow max-h-[50vh] overflow-y-auto text-white text-center font-annie">
       {story.map((entry, index) => (
         <p
           key={index}
@@ -12,7 +12,7 @@ const OutputBox = ({ story }: OutputBoxProps) => {
             entry.role === "player" ? "text-blue-400" : "text-green-400"
           }
         >
-          <strong>{entry.role === "player" ? "You" : "AI"}:</strong>{" "}
+          <strong>{entry.role === "player" ? "You" : "Ethan"}:</strong>{" "}
           {entry.text}
         </p>
       ))}
