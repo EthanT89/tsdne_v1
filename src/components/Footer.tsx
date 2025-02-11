@@ -1,13 +1,13 @@
 const Footer = () => {
   return (
-    <footer className="bg-transparent absolute bottom-4 flex justify-between w-full px-6 text-white">
+    <footer className="bg-transparent absolute bottom-4 flex justify-between w-full p-6  text-white">
       <a
         href="https://www.linkedin.com/in/ethan-thornberg/"
         target="_blank"
         rel="noopener noreferrer"
       >
         <img
-          src="/github-size-48.svg"
+          src="/linkedin-size-48.svg"
           alt="LinkedIn"
           className="h-8 w-8 opacity-75 hover:opacity-100"
         />
@@ -18,7 +18,7 @@ const Footer = () => {
         rel="noopener noreferrer"
       >
         <img
-          src="/github.svg"
+          src="/github-size-48.svg"
           alt="GitHub"
           className="h-8 w-8 opacity-75 hover:opacity-100"
         />
@@ -29,7 +29,7 @@ const Footer = () => {
         rel="noopener noreferrer"
       >
         <img
-          src="/instagram.svg"
+          src="/instagram-size-48.svg"
           alt="Instagram"
           className="h-8 w-8 opacity-75 hover:opacity-100"
         />
