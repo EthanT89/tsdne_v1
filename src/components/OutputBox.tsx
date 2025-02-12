@@ -10,8 +10,14 @@ const OutputBox = ({ story, error }: OutputBoxProps) => {
 
   useEffect(() => {
     if (outputRef.current) {
-      outputRef.current.scrollTop = outputRef.current.scrollHeight;
+      
+      outputRef.current.scrollTo({
+        top: outputRef.current.scrollHeight,
+        behavior: "smooth", // Enables smooth scrolling instead of instant jumps
+      });
     }
+
+    
   }, [story]); // Run effect every time `story` updates
 
   return (

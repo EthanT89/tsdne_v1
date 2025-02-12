@@ -17,7 +17,7 @@ export default function App() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const streamSpeed = 1; //  Adjustable streaming speed
+  const streamSpeed = 20; //  Adjustable streaming speed
 
   const sendMessage = async () => {
     if (!input.trim()) return;
