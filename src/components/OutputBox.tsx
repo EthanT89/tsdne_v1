@@ -13,7 +13,7 @@ const OutputBox = ({ story, error }: OutputBoxProps) => {
       
       outputRef.current.scrollTo({
         top: outputRef.current.scrollHeight,
-        behavior: "smooth", // Enables smooth scrolling instead of instant jumps
+        behavior: "smooth", // Enables smooth scrolling instead of instant jumps in the text box
       });
     }
 
