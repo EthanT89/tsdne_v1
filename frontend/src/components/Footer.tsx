@@ -1,4 +1,3 @@
-
 const Footer = () => {
   return (
     <footer className="bg-transparent absolute bottom-4 flex justify-center w-full p-4 space-x-4 text-white opacity-70 hover:opacity-100">

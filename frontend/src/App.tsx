@@ -5,8 +5,6 @@ import Title from "./components/Title";
 import OutputBox from "./components/OutputBox";
 import UserInput from "./components/UserInput";
 import Footer from "./components/Footer";
-import "./index.css"; 
-
 
 export default function App() {
   const [input, setInput] = useState("");

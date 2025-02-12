@@ -1,5 +1,3 @@
-import React from "react";
-
 interface UserInputProps {
   input: string;
   setInput: (value: string) => void;
