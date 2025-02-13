@@ -21,21 +21,54 @@ const OutputBox = ({ story, error }: OutputBoxProps) => {
   };
 
   const scrollToBottom = () => {
-    if (outputRef.current) {
-      outputRef.current.scrollTo({
-        top: outputRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-      setTimeout(() => setShowScrollButton(false), 500);
-    }
+    if (!outputRef.current) return;
+    const container = outputRef.current;
+    const start = container.scrollTop;
+    // Set the target to the bottom-most scroll position
+    const target = container.scrollHeight - container.clientHeight;
+    const distance = target - start;
+    const duration = Math.min(2000, Math.abs(distance) * 2); // scale duration based on distance, cap at 2000ms
+    let startTime: number | null = null;
+  
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+  
+    const animate = (currentTime: number) => {
+      if (startTime === null) startTime = currentTime;
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      container.scrollTop = start + distance * easeOutCubic(progress);
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setShowScrollButton(false);
+      }
+    };
+  
+    requestAnimationFrame(animate);
   };
+  
 
+  // Attach scroll listener
   useEffect(() => {
     const outputBox = outputRef.current;
     if (!outputBox) return;
     outputBox.addEventListener("scroll", handleScroll);
     return () => outputBox.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Auto-scroll effect: whenever story updates, scroll so that the new text's start aligns with the top
+  useEffect(() => {
+    if (outputRef.current && lastMessageRef.current) {
+      const container = outputRef.current;
+      const targetScroll = lastMessageRef.current.offsetTop;
+      if (container.scrollTop < targetScroll) {
+        container.scrollTo({
+          top: targetScroll,
+          behavior: "smooth",
+        });
+      }
+    }
+  }, [story]);
 
   return (
     <div className="relative w-full h-full">
@@ -66,7 +99,11 @@ const OutputBox = ({ story, error }: OutputBoxProps) => {
           <motion.div
             key={index}
             ref={index === story.length - 1 ? lastMessageRef : null}
-            className={entry.role === "player" ? "text-blue-400" : "text-white opacity-90"}
+            className={
+              entry.role === "player"
+                ? "text-blue-400"
+                : "text-white opacity-90"
+            }
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
