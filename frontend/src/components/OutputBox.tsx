@@ -5,9 +5,10 @@ import { ChevronDownIcon } from "@heroicons/react/24/solid";
 interface OutputBoxProps {
   story: { role: string; text: string }[];
   error?: string | null;
+  animationSpeed?: number;
 }
 
-const OutputBox = ({ story, error }: OutputBoxProps) => {
+const OutputBox = ({ story, error, animationSpeed }: OutputBoxProps) => {
   const outputRef = useRef<HTMLDivElement>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -24,14 +25,13 @@ const OutputBox = ({ story, error }: OutputBoxProps) => {
     if (!outputRef.current) return;
     const container = outputRef.current;
     const start = container.scrollTop;
-    // Set the target to the bottom-most scroll position
     const target = container.scrollHeight - container.clientHeight;
     const distance = target - start;
-    const duration = Math.min(2000, Math.abs(distance) * 2); // scale duration based on distance, cap at 2000ms
+    const duration = Math.min(2000, Math.abs(distance) * 0.5);
     let startTime: number | null = null;
-  
+
     const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-  
+
     const animate = (currentTime: number) => {
       if (startTime === null) startTime = currentTime;
       const elapsed = currentTime - startTime;
@@ -43,12 +43,10 @@ const OutputBox = ({ story, error }: OutputBoxProps) => {
         setShowScrollButton(false);
       }
     };
-  
+
     requestAnimationFrame(animate);
   };
-  
 
-  // Attach scroll listener
   useEffect(() => {
     const outputBox = outputRef.current;
     if (!outputBox) return;
@@ -74,13 +72,13 @@ const OutputBox = ({ story, error }: OutputBoxProps) => {
     <div className="relative w-full h-full">
       <div
         ref={outputRef}
+        style={{ fontSize: "inherit" }}  // Ensure inherited font size
         className="
           bg-gray-800
           p-4
           sm:p-6
           rounded-lg
           shadow
-          text-lg
           text-white
           opacity-80
           text-center
@@ -106,7 +104,10 @@ const OutputBox = ({ story, error }: OutputBoxProps) => {
             }
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{
+              duration: animationSpeed ? animationSpeed / 1000 : 0.5,
+              ease: "easeOut",
+            }}
           >
             <strong>{entry.role === "player" ? "You: " : ""}</strong>
             {entry.text.split(/\n\s*\n/).map((paragraph, i) => (
