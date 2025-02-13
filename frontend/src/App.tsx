@@ -17,7 +17,7 @@ export default function App() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const streamSpeed = 20; //  Adjustable streaming speed
+  const streamSpeed = 20; // Adjustable streaming speed
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -44,7 +44,7 @@ export default function App() {
       let aiMessage = { role: "ai", text: "" };
       setMessages((prev) => [...prev, aiMessage]); // Placeholder for AI response
 
-      let fullText = ""; // Store final formatted response
+      let fullText = "";
       let isComplete = false;
 
       while (!isComplete) {
@@ -53,7 +53,6 @@ export default function App() {
 
         const chunk = decoder.decode(value, { stream: true });
 
-        // Check if we received the final formatted message
         if (chunk.includes("<END>")) {
           fullText = chunk.replace("<END>", "").replace(/ <BREAK> /g, "\n\n");
           isComplete = true;
@@ -61,14 +60,13 @@ export default function App() {
           fullText += chunk;
         }
 
-        // Update UI dynamically
         setMessages((prev) => {
           const updated = [...prev];
           updated[updated.length - 1] = { ...aiMessage, text: fullText };
           return updated;
         });
 
-        await new Promise((resolve) => setTimeout(resolve, streamSpeed)); // Simulate typing effect
+        await new Promise((resolve) => setTimeout(resolve, streamSpeed));
       }
 
     } catch (err) {
@@ -80,9 +78,9 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-screen bg-gradient-to-b from-gray-900 to-black text-white font-annie">
+    <div className="flex flex-col min-h-screen w-full bg-gradient-to-b from-gray-900 to-black text-white font-annie">
       <Title />
-      <div className="flex flex-col items-center space-y-4 mt-[-70px] flex-grow justify-center">
+      <div className="flex flex-col items-center space-y-4 mt-[-40px] flex-grow justify-center px-4">
         <OutputBox story={messages} error={error} />
         <UserInput input={input} setInput={setInput} onSubmit={sendMessage} isLoading={loading} />
       </div>
