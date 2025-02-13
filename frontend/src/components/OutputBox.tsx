@@ -38,11 +38,27 @@ const OutputBox = ({ story, error }: OutputBoxProps) => {
   }, []);
 
   return (
-    <div className="relative w-full sm:w-11/12 md:w-10/12 lg:w-3/4">
-      {/* Scrollable Chatbox */}
+    <div className="relative w-full h-full">
       <div
         ref={outputRef}
-        className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow max-h-[70vh] sm:max-h-[60vh] md:max-h-[50vh] overflow-y-auto text-lg text-white opacity-80 text-center font-annie custom-scrollbar"
+        className="
+          bg-gray-800
+          p-4
+          sm:p-6
+          rounded-lg
+          shadow
+          text-lg
+          text-white
+          opacity-80
+          text-center
+          font-annie
+          custom-scrollbar
+          break-words
+          whitespace-pre-wrap
+          w-full
+          h-full
+          overflow-y-auto
+        "
       >
         {error && <p className="text-red-400 font-bold">{error}</p>}
 
@@ -57,17 +73,18 @@ const OutputBox = ({ story, error }: OutputBoxProps) => {
           >
             <strong>{entry.role === "player" ? "You: " : ""}</strong>
             {entry.text.split(/\n\s*\n/).map((paragraph, i) => (
-              <p key={i} className="mb-3">{paragraph}</p>
+              <p key={i} className="mb-3">
+                {paragraph}
+              </p>
             ))}
           </motion.div>
         ))}
       </div>
 
-      {/* Scroll to Bottom Button */}
       {showScrollButton && (
         <motion.button
           onClick={scrollToBottom}
-          className="absolute bottom-2 right-2 bg-gray-700 text-white p-2 rounded-full shadow-lg transition-opacity hover:bg-gray-600"
+          className="absolute bottom-4 right-4 bg-gray-700 text-white p-2 rounded-full shadow-lg transition-opacity hover:bg-gray-600"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
