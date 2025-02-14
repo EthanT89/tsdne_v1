@@ -1,20 +1,46 @@
 from flask import Flask, request, jsonify, Response, stream_with_context
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
+print("DATABASE_URL:", os.getenv("DATABASE_URL"))
+
 
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Initialize Flask app
+# Initialize Flask app and configure DB (update DATABASE_URL in your .env)
 app = Flask(__name__)
-CORS(app)  # Enable Cross-Origin Resource Sharing
+CORS(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-# Prompt Variables:
+# Define database models
+class Conversation(db.Model):
+    __tablename__ = 'conversations'
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    messages = db.relationship('Message', backref='conversation', lazy=True)
+
+class Message(db.Model):
+    __tablename__ = 'messages'
+    id = db.Column(db.Integer, primary_key=True)
+    conversation_id = db.Column(db.Integer, db.ForeignKey('conversations.id'), nullable=False)
+    role = db.Column(db.String(10), nullable=False)  # "player" or "ai"
+    text = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+# Create tables if they don't exist
+with app.app_context():
+    db.create_all()
+
+# Prompt Variables
 char_limit = 300  # Reduced limit for concise storytelling
 
 system_prompt_base = f"""
@@ -41,104 +67,50 @@ Constraints:
 - Tone, pacing, and stakes should match the unfolding narrative, adapting as needed to maintain engagement.
 """
 
-# Memory Tiers
-short_term_memory = []  # Stores the last 10 exchanges (word for word)
-mid_term_memory = []  # Stores summarized story segments
-long_term_memory = []  # Stores condensed key moments
+# (Keep your summarization and memory functions here if needed for future features)
 
-# Memory Configuration
-SHORT_TERM_LIMIT = 30
-MID_TERM_LIMIT = 20
-LONG_TERM_LIMIT = 20
-
-# Function to generate a summarized story segment
-def summarize_story_segment(segment):
-    """Summarizes a given text into a concise narrative form."""
-    if not segment:
-        return "No relevant past events."
-
-    prompt = f"Summarize these story events in a concise but immersive manner, retaining all KEY details:\n{segment}"
-
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "system", "content": prompt}],
-        max_tokens=400
-    )
-    print(response.choices[0].message.content)
-
-    return response.choices[0].message.content
-
-# Function to manage memory compression
-def update_memory():
-    global short_term_memory, mid_term_memory, long_term_memory
-
-    # If short-term exceeds limit, summarize and move excess to mid-term
-    if len(short_term_memory) > SHORT_TERM_LIMIT:
-        excess = short_term_memory[:5]  # Take the first 5
-        summary = summarize_story_segment("\n".join(excess))
-        mid_term_memory.append(summary)
-        short_term_memory = short_term_memory[5:]  # Keep the latest 10
-
-    # If mid-term exceeds limit, summarize and move excess to long-term
-    if len(mid_term_memory) > MID_TERM_LIMIT:
-        excess = mid_term_memory[:3]  # Take the first 3
-        summary = summarize_story_segment("\n".join(excess))
-        long_term_memory.append(summary)
-        mid_term_memory = mid_term_memory[3:]  # Keep the latest 7
-
-    # If long-term exceeds limit, compact and replace last 5 entries
-    if len(long_term_memory) > LONG_TERM_LIMIT:
-        excess = long_term_memory[-5:]  # Take the last 5
-        summary = summarize_story_segment("\n".join(excess))
-        long_term_memory = long_term_memory[:-5] + [summary]  # Replace last 5 with summary
-
-# Function to construct system prompt with memory
 def construct_system_prompt():
-    update_memory()  # Ensure memory is updated before constructing prompt
-
-    memory_summary = "\n\n".join(long_term_memory + mid_term_memory)
-    recent_history = "\n\n".join(short_term_memory)
-
-    system_prompt = system_prompt_base + f"""
-    \n\nLong-Term Story Recap:
-    {memory_summary if memory_summary else "No prior key events recorded."}
-    \n\nMid-Term Story Recap:
-    {recent_history if recent_history else "No recent interactions stored."}
-    """
-    
-    return system_prompt
+    # For now, we keep the same prompt; later, you could augment it with DB-fetched history
+    return system_prompt_base
 
 @app.route("/generate", methods=["POST"])
 def generate_response():
     try:
-        print(short_term_memory, '\n\nEND OF SHORT TERM\n\n', mid_term_memory, '\n\nEND OF MID TERM\n\n', long_term_memory, '\n\nEND OF LONG TERM\n\n')
         data = request.get_json()
         user_input = data.get("input", "")
-
         if not user_input:
             return jsonify({"error": "No input provided"}), 400
 
-        # Append user input to short-term memory
-        short_term_memory.append(f"User: {user_input}")
+        # Create a new conversation for this request
+        conversation = Conversation()
+        db.session.add(conversation)
+        db.session.commit()  # commit to get conversation.id
 
-        # Construct the updated system prompt
+        # Save user's message
+        user_message = Message(
+            conversation_id=conversation.id,
+            role="player",
+            text=user_input
+        )
+        db.session.add(user_message)
+        db.session.commit()
+
+        # Construct system prompt (you can later include conversation history from DB)
         system_prompt = construct_system_prompt()
 
         # OpenAI API streaming response
         def generate_stream():
-            print('Calling OpenAI API...')
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f'Reader\'s input: {user_input}'}
+                    {"role": "user", "content": f"Reader's input: {user_input}"}
                 ],
                 max_tokens=400,
                 stream=True  # Enable streaming response
             )
 
-            full_text = ""  
-
+            full_text = ""
             for chunk in response:
                 if chunk.choices[0].delta.content:
                     full_text += chunk.choices[0].delta.content
@@ -146,8 +118,14 @@ def generate_response():
                     import time
                     time.sleep(0.02)  # Simulate a streaming effect
 
-            # Save AI response in short-term memory
-            short_term_memory.append(f"AI: {full_text}")
+            # Save AI's response
+            ai_message = Message(
+                conversation_id=conversation.id,
+                role="ai",
+                text=full_text
+            )
+            db.session.add(ai_message)
+            db.session.commit()
 
             yield f"\n<END>{full_text}"
 
