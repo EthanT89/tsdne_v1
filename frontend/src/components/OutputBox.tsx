@@ -6,9 +6,17 @@ interface OutputBoxProps {
   story: { role: string; text: string }[];
   error?: string | null;
   animationSpeed?: number;
+  finalRender?: boolean; // New
+  onFinalRenderComplete?: () => void; // New
 }
 
-const OutputBox = ({ story, error, animationSpeed }: OutputBoxProps) => {
+const OutputBox = ({
+  story,
+  error,
+  animationSpeed,
+  finalRender,
+  onFinalRenderComplete,
+}: OutputBoxProps) => {
   const outputRef = useRef<HTMLDivElement>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -47,6 +55,7 @@ const OutputBox = ({ story, error, animationSpeed }: OutputBoxProps) => {
     requestAnimationFrame(animate);
   };
 
+  // Attach the scroll listener
   useEffect(() => {
     const outputBox = outputRef.current;
     if (!outputBox) return;
@@ -54,7 +63,7 @@ const OutputBox = ({ story, error, animationSpeed }: OutputBoxProps) => {
     return () => outputBox.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Auto-scroll effect: whenever story updates, scroll so that the new text's start aligns with the top
+  // Auto-scroll effect on new text: aligns the top of the new text with the container
   useEffect(() => {
     if (outputRef.current && lastMessageRef.current) {
       const container = outputRef.current;
@@ -68,11 +77,30 @@ const OutputBox = ({ story, error, animationSpeed }: OutputBoxProps) => {
     }
   }, [story]);
 
+  // NEW: final alignment if finalRender is true
+  useEffect(() => {
+    if (finalRender && outputRef.current && lastMessageRef.current) {
+      const container = outputRef.current;
+      const offset = lastMessageRef.current.offsetTop;
+
+      // If the container is still below the last message's offset, scroll again
+      if (container.scrollTop < offset) {
+        container.scrollTo({
+          top: offset,
+          behavior: "smooth",
+        });
+      }
+
+      // Signal we're done with final alignment
+      onFinalRenderComplete?.();
+    }
+  }, [finalRender, onFinalRenderComplete]);
+
   return (
     <div className="relative w-full h-full">
       <div
         ref={outputRef}
-        style={{ fontSize: "inherit" }}  // Ensure inherited font size
+        style={{ fontSize: "inherit" }}
         className="
           bg-gray-800
           p-4
@@ -97,11 +125,7 @@ const OutputBox = ({ story, error, animationSpeed }: OutputBoxProps) => {
           <motion.div
             key={index}
             ref={index === story.length - 1 ? lastMessageRef : null}
-            className={
-              entry.role === "player"
-                ? "text-blue-400"
-                : "text-white opacity-90"
-            }
+            className={entry.role === "player" ? "text-blue-400" : "text-white opacity-90"}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
