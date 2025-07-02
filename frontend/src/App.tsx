@@ -44,8 +44,8 @@ What’s next?`,
 
   const themeClasses =
     settings.theme === "dark"
-      ? "bg-gradient-to-b from-gray-900 to-black text-white"
-      : "bg-gradient-to-b from-gray-100 to-gray-300 text-black";
+      ? "bg-gradient-to-b from-gray-900 to-gray-950 text-white"
+      : "bg-gradient-to-b from-slate-50 to-slate-100 text-gray-900";
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -64,7 +64,7 @@ What’s next?`,
       if (!response.body) throw new Error("No response body received.");
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let aiMessage = { role: "ai", text: "" };
+      const aiMessage = { role: "ai", text: "" };
       setMessages((prev) => [...prev, aiMessage]);
       let fullText = "";
       let isComplete = false;
@@ -102,10 +102,14 @@ What’s next?`,
         <Title theme={settings.theme} />
         <button
           onClick={() => setShowSettings(true)}
-          className="p-2 bg-transparent rounded transition"
+          className={`p-2 rounded-lg transition-colors ${
+            settings.theme === "light" 
+              ? "hover:bg-gray-200 text-black" 
+              : "hover:bg-gray-800 text-white"
+          }`}
         >
           <CogIcon
-            className={`h-8 w-8 ${settings.theme === "light" ? "text-black" : "text-white"}`}
+            className="h-8 w-8"
           />
         </button>
       </header>
@@ -117,6 +121,7 @@ What’s next?`,
               story={messages}
               error={error}
               animationSpeed={settings.animationSpeed}
+              theme={settings.theme}
             />
           </div>
           <UserInput
@@ -124,11 +129,12 @@ What’s next?`,
             setInput={setInput}
             onSubmit={sendMessage}
             isLoading={loading}
+            theme={settings.theme}
           />
         </div>
       </main>
 
-      <Footer />
+      <Footer theme={settings.theme} />
 
       {showSettings && (
         <SettingsPanel

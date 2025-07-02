@@ -8,6 +8,7 @@ interface OutputBoxProps {
   animationSpeed?: number;
   finalRender?: boolean; // New
   onFinalRenderComplete?: () => void; // New
+  theme?: "dark" | "light";
 }
 
 const OutputBox = ({
@@ -16,6 +17,7 @@ const OutputBox = ({
   animationSpeed,
   finalRender,
   onFinalRenderComplete,
+  theme = "dark",
 }: OutputBoxProps) => {
   const outputRef = useRef<HTMLDivElement>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
@@ -96,19 +98,28 @@ const OutputBox = ({
     }
   }, [finalRender, onFinalRenderComplete]);
 
+  const isDark = theme === "dark";
+  const containerClasses = isDark
+    ? "bg-gray-800 text-white border-gray-700"
+    : "bg-white text-gray-900 border-gray-200";
+  
+  const scrollButtonClasses = isDark
+    ? "bg-gray-700 hover:bg-gray-600 text-white"
+    : "bg-gray-200 hover:bg-gray-300 text-gray-700";
+
   return (
     <div className="relative w-full h-full">
       <div
         ref={outputRef}
         style={{ fontSize: "inherit" }}
-        className="
-          bg-gray-800
+        className={`
+          ${containerClasses}
           p-4
           sm:p-6
           rounded-lg
-          shadow
-          text-white
-          opacity-80
+          shadow-lg
+          border
+          opacity-95
           text-center
           font-annie
           custom-scrollbar
@@ -117,15 +128,18 @@ const OutputBox = ({
           w-full
           h-full
           overflow-y-auto
-        "
+        `}
       >
-        {error && <p className="text-red-400 font-bold">{error}</p>}
+        {error && <p className="text-red-500 font-bold">{error}</p>}
 
         {story.map((entry, index) => (
           <motion.div
             key={index}
             ref={index === story.length - 1 ? lastMessageRef : null}
-            className={entry.role === "player" ? "text-blue-400" : "text-white opacity-90"}
+            className={entry.role === "player" 
+              ? "text-primary-600" 
+              : isDark ? "text-white opacity-90" : "text-gray-800"
+            }
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
@@ -146,7 +160,7 @@ const OutputBox = ({
       {showScrollButton && (
         <motion.button
           onClick={scrollToBottom}
-          className="absolute bottom-4 right-4 bg-gray-700 text-white p-2 rounded-full shadow-lg transition-opacity hover:bg-gray-600"
+          className={`absolute bottom-4 right-4 ${scrollButtonClasses} p-2 rounded-full shadow-lg transition-colors`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >

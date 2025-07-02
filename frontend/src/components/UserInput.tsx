@@ -3,9 +3,10 @@ interface UserInputProps {
   setInput: (value: string) => void;
   onSubmit: () => void;
   isLoading: boolean;
+  theme?: "dark" | "light";
 }
 
-const UserInput = ({ input, setInput, onSubmit, isLoading }: UserInputProps) => {
+const UserInput = ({ input, setInput, onSubmit, isLoading, theme = "dark" }: UserInputProps) => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !isLoading) {
       e.preventDefault();
@@ -14,25 +15,32 @@ const UserInput = ({ input, setInput, onSubmit, isLoading }: UserInputProps) => 
     }
   };
 
+  const isDark = theme === "dark";
+  const inputClasses = isDark
+    ? "bg-gray-800 text-white border-gray-600 placeholder-gray-400 focus:ring-primary-500 focus:border-primary-500"
+    : "bg-white text-gray-900 border-gray-300 placeholder-gray-500 focus:ring-primary-500 focus:border-primary-500";
+  
+  const buttonClasses = isDark
+    ? "bg-gray-600 hover:bg-gray-500 text-white"
+    : "bg-gray-200 hover:bg-gray-300 text-gray-700";
+
   return (
-    <div className="flex items-center justify-center w-full py-2">
+    <div className="flex items-center justify-center w-full py-2 gap-2">
       <input
-        className="
-          w-full
-          p-2
-          bg-gray-800
-          text-white
-          opacity-80
+        className={`
+          flex-1
+          p-3
           font-annie
           rounded-lg
-          placeholder-gray-400
           border
-          border-gray-600
+          transition-colors
+          duration-200
           focus:outline-none
-          focus:ring
-          focus:ring-blue-500
+          focus:ring-2
           disabled:opacity-50
-        "
+          disabled:cursor-not-allowed
+          ${inputClasses}
+        `}
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyPress}
@@ -41,17 +49,18 @@ const UserInput = ({ input, setInput, onSubmit, isLoading }: UserInputProps) => 
       />
       <button
         className={`
-          ml-2
-          p-2
-          px-3
-          bg-gray-600
-          text-white
+          px-4
+          py-3
           rounded-lg
-          hover:bg-gray-500
-          transition
+          font-medium
+          transition-colors
+          duration-200
           flex
           items-center
-          ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
+          justify-center
+          min-w-[64px]
+          ${buttonClasses}
+          ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:shadow-md"}
         `}
         onClick={() => {
           if (!isLoading) {
@@ -61,7 +70,7 @@ const UserInput = ({ input, setInput, onSubmit, isLoading }: UserInputProps) => 
         }}
         disabled={isLoading}
       >
-        {isLoading ? "Loading..." : "Go"}
+        {isLoading ? "..." : "Go"}
       </button>
     </div>
   );
