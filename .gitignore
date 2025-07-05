@@ -26,3 +26,18 @@ backend/.env
 "backend/.env" 
 .env.local
 backend/.env.local
+
+# Python virtual environments
+backend/venv_new/
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Test coverage
+coverage/
+.coverage
+.pytest_cache/
