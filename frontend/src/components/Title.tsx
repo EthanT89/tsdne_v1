@@ -1,6 +1,4 @@
-interface TitleProps {
-  theme: "dark" | "light";
-}
+import { TitleProps } from "../types";
 
 const Title = ({ theme }: TitleProps) => {
   return (

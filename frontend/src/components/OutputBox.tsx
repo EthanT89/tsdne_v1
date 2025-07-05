@@ -1,15 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-
-interface OutputBoxProps {
-  story: { role: string; text: string }[];
-  error?: string | null;
-  animationSpeed?: number;
-  finalRender?: boolean; // New
-  onFinalRenderComplete?: () => void; // New
-  theme?: "dark" | "light";
-}
+import { OutputBoxProps, MessageRole } from "../types";
 
 const OutputBox = ({
   story,
@@ -136,7 +128,7 @@ const OutputBox = ({
           <motion.div
             key={index}
             ref={index === story.length - 1 ? lastMessageRef : null}
-            className={entry.role === "player" 
+            className={entry.role === MessageRole.PLAYER 
               ? "text-primary-600" 
               : isDark ? "text-white opacity-90" : "text-gray-800"
             }
@@ -147,7 +139,7 @@ const OutputBox = ({
               ease: "easeOut",
             }}
           >
-            <strong>{entry.role === "player" ? "You: " : ""}</strong>
+            <strong>{entry.role === MessageRole.PLAYER ? "You: " : ""}</strong>
             {entry.text.split(/\n\s*\n/).map((paragraph, i) => (
               <p key={i} className="mb-3">
                 {paragraph}

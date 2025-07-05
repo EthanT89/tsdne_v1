@@ -1,21 +1,10 @@
 import { useState } from "react";
-
-interface Settings {
-  fontSize: number;
-  animationSpeed: number;
-  theme: "dark" | "light";
-}
-
-interface SettingsPanelProps {
-  settings: Settings;
-  updateSettings: (newSettings: Settings) => void;
-  closePanel: () => void;
-}
+import { SettingsPanelProps } from "../types";
 
 const SettingsPanel = ({ settings, updateSettings, closePanel }: SettingsPanelProps) => {
   const [localSettings, setLocalSettings] = useState(settings);
 
-  const handleChange = (field: keyof Settings, value: number | "dark" | "light") => {
+  const handleChange = (field: keyof typeof settings, value: number | "dark" | "light") => {
     setLocalSettings({ ...localSettings, [field]: value });
   };
 

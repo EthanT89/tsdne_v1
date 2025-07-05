@@ -1,6 +1,4 @@
-interface FooterProps {
-  theme?: "dark" | "light";
-}
+import { FooterProps } from "../types";
 
 const Footer = ({ theme = "dark" }: FooterProps) => {
   const isDark = theme === "dark";

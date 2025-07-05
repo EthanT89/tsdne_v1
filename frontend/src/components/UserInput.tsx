@@ -1,10 +1,4 @@
-interface UserInputProps {
-  input: string;
-  setInput: (value: string) => void;
-  onSubmit: () => void;
-  isLoading: boolean;
-  theme?: "dark" | "light";
-}
+import { UserInputProps } from "../types";
 
 const UserInput = ({ input, setInput, onSubmit, isLoading, theme = "dark" }: UserInputProps) => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
