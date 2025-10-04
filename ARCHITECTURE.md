@@ -57,11 +57,11 @@
          │                   │
          ▼                   ▼
 ┌──────────────┐    ┌─────────────────┐
-│   OpenAI     │    │    Database     │
+│   Claude     │    │    Database     │
 │     API      │    │ (SQLite / PG)   │
 │              │    │                 │
-│ GPT-3.5      │    │ conversations   │
-│ Turbo        │    │ messages        │
+│ Claude 3.5   │    │ conversations   │
+│ Sonnet       │    │ messages        │
 └──────────────┘    └─────────────────┘
 ```
 
@@ -88,7 +88,7 @@ routes.py (generate_response)
     ├─ Build AI prompt with context
     │
     ▼
-OpenAI API (streaming)
+Claude API (streaming)
     │
     ├─ Stream chunks back to frontend
     │
@@ -138,7 +138,7 @@ routes.py
        │ 5. Generate story
        ▼
 ┌─────────────┐
-│  OpenAI     │  GPT-3.5-turbo
+│   Claude    │  Claude 3.5 Sonnet
 └──────┬──────┘
        │
        │ 6. Stream response
@@ -160,7 +160,7 @@ app.py
 routes.py
   ├── models (Conversation, Message)
   ├── database (db session)
-  └── openai (OpenAI client)
+  └── anthropic (Anthropic client)
 
 models.py
   └── database (db instance)
@@ -295,7 +295,7 @@ The air inside is thick with dust...
 - **Flask 3.1** - Web framework
 - **Flask-SQLAlchemy** - ORM
 - **Flask-CORS** - Cross-origin requests
-- **OpenAI SDK** - AI integration
+- **Anthropic SDK** - AI integration
 - **python-dotenv** - Environment variables
 
 ### Database Options
@@ -355,7 +355,7 @@ The air inside is thick with dust...
 
 ### Key Metrics to Track
 - API response times
-- OpenAI API latency
+- Claude API latency
 - Database query performance
 - Frontend load times
 - Error rates by endpoint
@@ -399,7 +399,7 @@ The air inside is thick with dust...
 ### Unit Tests
 - Test individual functions
 - Mock database calls
-- Mock OpenAI API
+- Mock Claude API
 
 ### Integration Tests
 - Test API endpoints

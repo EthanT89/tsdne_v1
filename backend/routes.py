@@ -1,12 +1,12 @@
 from flask import request, jsonify, Response, stream_with_context
-from openai import OpenAI
+from anthropic import Anthropic
 import os
 from models import Conversation, Message
 from database import db
 import time
 
-# Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Initialize Anthropic client
+client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 # Prompt Variables
 CHAR_LIMIT = 300
@@ -91,35 +91,31 @@ def register_routes(app):
             # Construct system prompt with conversation history
             system_prompt = construct_system_prompt(conversation.id)
             
-            # OpenAI API streaming response
+            # Claude API streaming response
             def generate_stream():
-                response = client.chat.completions.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": f"Reader's input: {user_input}"}
-                    ],
+                with client.messages.stream(
+                    model="claude-3-5-sonnet-20241022",
                     max_tokens=400,
-                    stream=True
-                )
-                
-                full_text = ""
-                for chunk in response:
-                    if chunk.choices[0].delta.content:
-                        full_text += chunk.choices[0].delta.content
-                        yield chunk.choices[0].delta.content
+                    messages=[
+                        {"role": "user", "content": f"{system_prompt}\n\nReader's input: {user_input}"}
+                    ]
+                ) as stream:
+                    full_text = ""
+                    for text in stream.text_stream:
+                        full_text += text
+                        yield text
                         time.sleep(0.02)
-                
-                # Save AI's response
-                ai_message = Message(
-                    conversation_id=conversation.id,
-                    role="ai",
-                    text=full_text
-                )
-                db.session.add(ai_message)
-                db.session.commit()
-                
-                yield f"\n<END>{full_text}"
+                    
+                    # Save AI's response
+                    ai_message = Message(
+                        conversation_id=conversation.id,
+                        role="ai",
+                        text=full_text
+                    )
+                    db.session.add(ai_message)
+                    db.session.commit()
+                    
+                    yield f"\n<END>{full_text}"
             
             return Response(stream_with_context(generate_stream()), content_type="text/plain")
         
