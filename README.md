@@ -38,6 +38,10 @@ this-story-does-not-exist/
 ├── README.md            # Project documentation
 ```
 
+## 🚀 Quick Start
+
+**Want to get started quickly?** See the [QUICKSTART.md](QUICKSTART.md) guide!
+
 ## 🔧 Installation & Setup
 
 ### **Prerequisites**
