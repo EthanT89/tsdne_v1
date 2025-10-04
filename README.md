@@ -79,6 +79,8 @@ DATABASE_URL=sqlite:///tsdne.db
 FLASK_ENV=development
 ```
 
+For detailed information about configuring Claude API settings, see [CLAUDE_CONFIGURATION.md](CLAUDE_CONFIGURATION.md).
+
 - Start the Flask server:
 
 ```bash

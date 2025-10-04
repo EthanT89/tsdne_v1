@@ -10,6 +10,18 @@ This document provides guidance on how to configure and adjust Claude API settin
 4. Create a new API key
 5. Copy the key (it starts with `sk-ant-`)
 
+## Installation Requirements
+
+The application requires the Anthropic SDK version 0.39.0 or later. The dependencies are managed in `backend/requirements.txt`.
+
+**Important:** If you encounter issues with httpx compatibility, ensure you're using httpx version 0.27.x (not 0.28.x). The requirements.txt file specifies compatible versions.
+
+To install all dependencies:
+```bash
+cd backend
+pip install -r requirements.txt
+```
+
 ## Setting Up the API Key
 
 Add your Claude API key to the `backend/.env` file:

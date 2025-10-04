@@ -107,6 +107,7 @@ npm install
 
 ## Next Steps
 
+- Read [CLAUDE_CONFIGURATION.md](CLAUDE_CONFIGURATION.md) for detailed Claude API settings
 - Read [DEVELOPMENT.md](DEVELOPMENT.md) for detailed architecture info
 - See [README.md](README.md) for project overview
 - Check the roadmap for upcoming features
