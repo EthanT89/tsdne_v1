@@ -56,7 +56,8 @@ What’s next?`,
     setInput("");
 
     try {
-      const response = await fetch("http://localhost:5000/generate", {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${apiUrl}/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ input }),
