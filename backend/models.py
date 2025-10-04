@@ -1,8 +1,6 @@
 # models.py
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-
-db = SQLAlchemy()
+from database import db
 
 class Conversation(db.Model):
     __tablename__ = 'conversations'
