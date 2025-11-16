@@ -6,7 +6,8 @@ import OutputBox from "./components/OutputBox";
 import UserInput from "./components/UserInput";
 import Footer from "./components/Footer";
 import SettingsPanel from "./components/SettingsPanel";
-import { CogIcon } from "@heroicons/react/24/solid";
+import ConversationSidebar from "./components/ConversationSidebar";
+import { CogIcon, BookOpenIcon, PlusIcon } from "@heroicons/react/24/solid";
 
 
 interface Settings {
@@ -42,10 +43,66 @@ What’s next?`,
   });
   const [showSettings, setShowSettings] = useState(false);
 
+  // Conversation management state
+  const [conversationId, setConversationId] = useState<number | null>(null);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   const themeClasses =
     settings.theme === "dark"
       ? "bg-gradient-to-b from-gray-900 to-gray-950 text-white"
       : "bg-gradient-to-b from-slate-50 to-slate-100 text-gray-900";
+
+  const loadConversation = async (id: number) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${apiUrl}/conversations/${id}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to load conversation");
+      }
+
+      const data = await response.json();
+
+      // Transform backend format to frontend format
+      const loadedMessages = data.messages.map((m: any) => ({
+        role: m.role,
+        text: m.text,
+      }));
+
+      setMessages(loadedMessages);
+      setConversationId(id);
+      setShowSidebar(false);
+    } catch (err) {
+      console.error("Failed to load conversation:", err);
+      setError("Failed to load conversation");
+    }
+  };
+
+  const deleteConversation = (id: number) => {
+    // If we're currently viewing this conversation, start a new story
+    if (conversationId === id) {
+      startNewStory();
+    }
+  };
+
+  const startNewStory = () => {
+    setMessages([
+      {
+        role: "Dev",
+        text: `Welcome to This Story Does Not Exist, where every choice you make writes a story only you can tell. You are both the reader and the written.
+
+Hi, I'm Ethan Thornberg! I built this because I believe storytelling should be as limitless as your imagination. This project is my way of combining AI and creativity to build something truly unique. Check out the links below to see what else I'm working on—I'd love to connect!
+
+To begin, describe your world. It could be a bustling city, a quiet forest, or something entirely new. Wherever you take it, the adventure is yours to create.
+
+What's next?`,
+      },
+    ]);
+    setConversationId(null);
+    setError(null);
+    setRefreshTrigger((prev) => prev + 1);
+  };
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -60,7 +117,10 @@ What’s next?`,
       const response = await fetch(`${apiUrl}/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input }),
+        body: JSON.stringify({
+          input,
+          conversation_id: conversationId
+        }),
       });
       if (!response.body) throw new Error("No response body received.");
       const reader = response.body.getReader();
@@ -69,6 +129,8 @@ What’s next?`,
       setMessages((prev) => [...prev, aiMessage]);
       let fullText = "";
       let isComplete = false;
+      let newConversationId = conversationId;
+
       while (!isComplete) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -86,6 +148,12 @@ What’s next?`,
         });
         await new Promise((resolve) => setTimeout(resolve, streamSpeed));
       }
+
+      // If this was a new conversation, we need to get the conversation ID
+      // This is a simplified approach - in production, you'd return it from the API
+      if (!newConversationId) {
+        setRefreshTrigger((prev) => prev + 1);
+      }
     } catch (err) {
       console.error("API Error:", err);
       setError("The AI is currently unavailable. Please try again later.");
@@ -100,18 +168,43 @@ What’s next?`,
       style={{ fontSize: settings.fontSize + "px" }}
     >
       <header className="p-3 text-center flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowSidebar(true)}
+            className={`p-2 rounded-lg transition-colors ${
+              settings.theme === "light"
+                ? "hover:bg-gray-200 text-black"
+                : "hover:bg-gray-800 text-white"
+            }`}
+            title="My Stories"
+          >
+            <BookOpenIcon className="h-8 w-8" />
+          </button>
+          <button
+            onClick={startNewStory}
+            className={`p-2 rounded-lg transition-colors ${
+              settings.theme === "light"
+                ? "hover:bg-gray-200 text-black"
+                : "hover:bg-gray-800 text-white"
+            }`}
+            title="New Story"
+          >
+            <PlusIcon className="h-8 w-8" />
+          </button>
+        </div>
+
         <Title theme={settings.theme} />
+
         <button
           onClick={() => setShowSettings(true)}
           className={`p-2 rounded-lg transition-colors ${
-            settings.theme === "light" 
-              ? "hover:bg-gray-200 text-black" 
+            settings.theme === "light"
+              ? "hover:bg-gray-200 text-black"
               : "hover:bg-gray-800 text-white"
           }`}
+          title="Settings"
         >
-          <CogIcon
-            className="h-8 w-8"
-          />
+          <CogIcon className="h-8 w-8" />
         </button>
       </header>
 
@@ -144,6 +237,15 @@ What’s next?`,
           closePanel={() => setShowSettings(false)}
         />
       )}
+
+      <ConversationSidebar
+        isOpen={showSidebar}
+        onClose={() => setShowSidebar(false)}
+        onLoadConversation={loadConversation}
+        onDeleteConversation={deleteConversation}
+        theme={settings.theme}
+        refreshTrigger={refreshTrigger}
+      />
     </div>
   );
 }

@@ -147,7 +147,7 @@ def register_routes(app):
             conversation = Conversation.query.get(conversation_id)
             if not conversation:
                 return jsonify({"error": "Conversation not found"}), 404
-            
+
             messages = Message.query.filter_by(conversation_id=conversation_id).order_by(Message.created_at).all()
             return jsonify({
                 "id": conversation.id,
@@ -161,4 +161,24 @@ def register_routes(app):
                 } for m in messages]
             })
         except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    @app.route("/conversations/<int:conversation_id>", methods=["DELETE"])
+    def delete_conversation(conversation_id):
+        """Delete a conversation and all its messages"""
+        try:
+            conversation = Conversation.query.get(conversation_id)
+            if not conversation:
+                return jsonify({"error": "Conversation not found"}), 404
+
+            # Delete all messages in the conversation
+            Message.query.filter_by(conversation_id=conversation_id).delete()
+
+            # Delete the conversation
+            db.session.delete(conversation)
+            db.session.commit()
+
+            return jsonify({"message": "Conversation deleted successfully"}), 200
+        except Exception as e:
+            db.session.rollback()
             return jsonify({"error": str(e)}), 500
