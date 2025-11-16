@@ -9,6 +9,11 @@ global.fetch = vi.fn()
 describe('App Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // Mock conversations fetch that happens on component mount
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => []
+    })
   })
 
   it('renders the application with title and input', () => {
@@ -49,10 +54,9 @@ describe('App Integration Tests', () => {
         .mockImplementation(() => new Promise(() => {})) // Never resolves to keep loading
     }
 
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      body: { getReader: () => mockReader }
-    })
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => [] }) // First call: conversations fetch
+      .mockResolvedValue({ ok: true, body: { getReader: () => mockReader } }) // Subsequent calls: generate
 
     render(<App />)
 
@@ -72,8 +76,10 @@ describe('App Integration Tests', () => {
   it('displays error message when fetch fails', async () => {
     const user = userEvent.setup()
 
-    // Mock failed fetch
-    global.fetch = vi.fn().mockRejectedValue(new Error('Network error'))
+    // Mock successful conversations fetch but failed generate fetch
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => [] }) // First call: conversations fetch
+      .mockRejectedValueOnce(new Error('Network error')) // Second call: generate fetch fails
 
     render(<App />)
 
@@ -85,7 +91,7 @@ describe('App Integration Tests', () => {
 
     // Wait for error message
     await waitFor(() => {
-      expect(screen.getByText(/error/i)).toBeInTheDocument()
+      expect(screen.getByText(/Network error/i)).toBeInTheDocument()
     }, { timeout: 3000 })
   })
 
@@ -106,10 +112,9 @@ describe('App Integration Tests', () => {
         .mockResolvedValueOnce({ done: true })
     }
 
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      body: { getReader: () => mockReader }
-    })
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => [] }) // First call: conversations fetch
+      .mockResolvedValue({ ok: true, body: { getReader: () => mockReader } }) // Subsequent calls: generate
 
     render(<App />)
 
