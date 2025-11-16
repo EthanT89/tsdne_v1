@@ -26,7 +26,7 @@ jobs:
     - name: Run tests
       run: |
         cd backend
-        pytest --cov --cov-report=xml --cov-report=term
+        PYTHONPATH=. pytest --cov --cov-report=xml --cov-report=term
       env:
         OPENAI_API_KEY: test-key-not-real
 
