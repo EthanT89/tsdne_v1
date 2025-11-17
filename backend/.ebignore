@@ -1,0 +1,39 @@
+# Elastic Beanstalk ignore file
+# These files won't be uploaded to EB
+
+# Virtual environment
+venv/
+env/
+
+# Test files
+tests/
+pytest.ini
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Development files
+*.pyc
+__pycache__/
+.env
+.env.local
+environment.config
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Database (local development only)
+*.db
+*.sqlite
+*.sqlite3
