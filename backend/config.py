@@ -17,9 +17,16 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     """Production configuration"""
     DEBUG = False
-    
+
+class TestingConfig(Config):
+    """Testing configuration"""
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    OPENAI_API_KEY = 'test-key-not-real'
+
 config = {
     'development': DevelopmentConfig,
     'production': ProductionConfig,
+    'testing': TestingConfig,
     'default': DevelopmentConfig
 }

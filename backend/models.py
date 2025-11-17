@@ -9,7 +9,7 @@ class Conversation(db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )
-    messages = db.relationship('Message', backref='conversation', lazy=True)
+    messages = db.relationship('Message', backref='conversation', lazy=True, cascade='all, delete-orphan')
 
 class Message(db.Model):
     __tablename__ = 'messages'
