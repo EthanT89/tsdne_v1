@@ -82,7 +82,37 @@ Ask your CS department or IT helpdesk!
 
 ---
 
-### STEP 2: Set Up Database - Neon.tech (2 min)
+### STEP 2: Set Up Database (Choose One)
+
+#### Option A: Supabase (RECOMMENDED! 🌟)
+
+```bash
+# 1. Visit: https://supabase.com
+# 2. Click "Start your project" → Sign up with GitHub
+# 3. Click "New project"
+#    - Name: tsdne-db
+#    - Database Password: (generate strong password - SAVE IT!)
+#    - Region: Choose closest to you
+#    - Plan: Free
+# 4. Wait 2-3 minutes for setup
+# 5. Go to Settings → Database → Connection string → URI
+# 6. Copy and replace [YOUR-PASSWORD] with your actual password
+#    postgresql://postgres:YOUR-PASSWORD@db.xxx.supabase.co:5432/postgres
+```
+
+**Save this!** You'll need it in Step 3.
+
+**Why Supabase?**
+- ✅ No credit card required
+- ✅ 500 MB storage + built-in authentication
+- ✅ Beautiful dashboard to view your data
+- ✅ Auto-generated REST APIs
+- ✅ Perfect for adding user auth later (Task 4)!
+- ✅ Free forever
+
+**See `SUPABASE_GUIDE.md` for detailed instructions!**
+
+#### Option B: Neon.tech (More storage)
 
 ```bash
 # 1. Visit: https://neon.tech
@@ -97,13 +127,12 @@ Ask your CS department or IT helpdesk!
 #    postgresql://user:password@host.neon.tech/dbname?sslmode=require
 ```
 
-**Save this!** You'll need it in Step 4.
-
 **Why Neon?**
-- ✅ No credit card required
-- ✅ 3 GB storage (plenty for this app)
-- ✅ Auto-suspends when idle (saves resources)
+- ✅ 3 GB storage (vs Supabase's 500 MB)
+- ✅ Faster setup (no password to remember)
 - ✅ Free forever
+
+**My recommendation: Use Supabase** - the built-in features are worth it!
 
 ---
 

@@ -20,7 +20,37 @@ Quick reference checklist for deploying "This Story Does Not Exist" completely f
 
 ---
 
-## 🗄️ Database Setup (Neon.tech)
+## 🗄️ Database Setup (Choose ONE)
+
+### Option A: Supabase (RECOMMENDED! 🌟)
+**Why:** Built-in auth, beautiful dashboard, 500 MB free
+
+1. **Create Database**
+   - [ ] Go to https://supabase.com
+   - [ ] Sign up with GitHub
+   - [ ] Click "New project"
+   - [ ] Name: `tsdne-db`
+   - [ ] Generate strong password (save it!)
+   - [ ] Choose region (closest to you)
+   - [ ] Wait 2-3 minutes for setup
+
+2. **Get Connection String**
+   - [ ] Settings → Database → Connection string → URI
+   - [ ] Copy and replace `[YOUR-PASSWORD]` with actual password
+   ```bash
+   postgresql://postgres:YOUR-PASSWORD@db.xxx.supabase.co:5432/postgres
+   ```
+   - [ ] Connection string saved securely
+
+3. **Initialize Database (Optional - do now or after backend deployment)**
+   - [ ] Click "SQL Editor" in Supabase dashboard
+   - [ ] Run the CREATE TABLE SQL from `SUPABASE_GUIDE.md`
+   - [ ] OR do this later via Render Shell: `python init_db.py`
+
+**See `SUPABASE_GUIDE.md` for detailed Supabase setup!**
+
+### Option B: Neon.tech
+**Why:** 3 GB storage (vs 500 MB), simpler
 
 1. **Create Database**
    - [ ] Go to https://neon.tech
@@ -30,7 +60,6 @@ Quick reference checklist for deploying "This Story Does Not Exist" completely f
 
 2. **Save Connection String**
    ```bash
-   # Connection string format:
    postgresql://user:password@host.neon.tech/dbname?sslmode=require
    ```
    - [ ] Connection string saved securely
