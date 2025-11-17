@@ -1,0 +1,23 @@
+services:
+  # Backend API Service
+  - type: web
+    name: tsdne-backend
+    env: python
+    region: oregon  # Free tier available in Oregon
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn application:application"
+    healthCheckPath: /health
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: DATABASE_URL
+        sync: false  # Set manually in Render dashboard
+      - key: OPENAI_API_KEY
+        sync: false  # Set manually in Render dashboard
+      - key: SECRET_KEY
+        sync: false  # Set manually in Render dashboard
+      - key: ALLOWED_ORIGINS
+        value: http://localhost:5173  # Update after frontend deployment
