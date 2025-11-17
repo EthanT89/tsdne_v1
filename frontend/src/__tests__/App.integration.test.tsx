@@ -89,9 +89,9 @@ describe('App Integration Tests', () => {
     await user.type(input, 'Test message')
     await user.click(button)
 
-    // Wait for error message
+    // Wait for error message (App.tsx catches errors and displays a user-friendly message)
     await waitFor(() => {
-      expect(screen.getByText(/Network error/i)).toBeInTheDocument()
+      expect(screen.getByText(/The AI is currently unavailable/i)).toBeInTheDocument()
     }, { timeout: 3000 })
   })
 
