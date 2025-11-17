@@ -6,7 +6,7 @@ Get "This Story Does Not Exist" running in 5 minutes!
 
 - Python 3.8+ installed
 - Node.js 16+ installed  
-- An OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
+- A Claude API key ([Get one here](https://console.anthropic.com/))
 
 ## Step-by-Step Setup
 
@@ -28,13 +28,13 @@ pip install -r requirements.txt
 # Create .env file
 cp .env.example .env
 
-# Edit .env and add your OpenAI API key
-# OPENAI_API_KEY=sk-...your-key-here...
+# Edit .env and add your Claude API key
+# ANTHROPIC_API_KEY=sk-ant-...your-key-here...
 ```
 
 **Quick .env setup:**
 ```bash
-echo "OPENAI_API_KEY=your-key-here" > .env
+echo "ANTHROPIC_API_KEY=your-key-here" > .env
 echo "DATABASE_URL=sqlite:///tsdne.db" >> .env
 echo "FLASK_ENV=development" >> .env
 ```
@@ -94,9 +94,9 @@ cd frontend
 npm install
 ```
 
-### "OpenAI API error"
+### "Claude API error"
 - Check your API key in `backend/.env`
-- Verify the key is valid at https://platform.openai.com/api-keys
+- Verify the key is valid at https://console.anthropic.com/
 - Ensure you have credits available
 
 ### Port already in use
@@ -107,6 +107,7 @@ npm install
 
 ## Next Steps
 
+- Read [CLAUDE_CONFIGURATION.md](CLAUDE_CONFIGURATION.md) for detailed Claude API settings
 - Read [DEVELOPMENT.md](DEVELOPMENT.md) for detailed architecture info
 - See [README.md](README.md) for project overview
 - Check the roadmap for upcoming features

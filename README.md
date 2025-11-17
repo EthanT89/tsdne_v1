@@ -9,7 +9,7 @@ This is a dynamic, text-based adventure game where AI generates a unique narrati
 ## 🛠 Tech Stack
 
 - **Frontend**: Vite + React + TypeScript + Tailwind CSS
-- **Backend**: Flask + OpenAI API + Flask-SQLAlchemy
+- **Backend**: Flask + Claude API + Flask-SQLAlchemy
 - **Database**: PostgreSQL (production) / SQLite (development)
 - **Infrastructure**: AWS Elastic Beanstalk / Vercel (for deployment)
 
@@ -47,7 +47,7 @@ this-story-does-not-exist/
 ### **Prerequisites**
 - Python 3.8+ 
 - Node.js 16+
-- OpenAI API Key
+- Claude API Key
 
 ### **1️⃣ Clone the Repository**
 
@@ -72,12 +72,14 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-- Edit `.env` and add your OpenAI API key:
+- Edit `.env` and add your Claude API key:
 ```
-OPENAI_API_KEY=your-actual-api-key-here
+ANTHROPIC_API_KEY=your-actual-api-key-here
 DATABASE_URL=sqlite:///tsdne.db
 FLASK_ENV=development
 ```
+
+For detailed information about configuring Claude API settings, see [CLAUDE_CONFIGURATION.md](CLAUDE_CONFIGURATION.md).
 
 - Start the Flask server:
 
