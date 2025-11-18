@@ -1,0 +1,24 @@
+# Add these to your .gitignore if not already present
+
+# Environment configuration (NEVER commit these!)
+.env
+.env.local
+.env.production
+environment.config
+
+# Elastic Beanstalk
+.elasticbeanstalk/
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
