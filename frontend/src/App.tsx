@@ -141,7 +141,8 @@ What's next?`,
           if (convIdMatch) {
             newConversationId = parseInt(convIdMatch[1]);
           }
-          fullText = chunk.replace("<END>", "").replace(/<CONV_ID>\d+/, "").replace(/ <BREAK> /g, "\n\n");
+          // Don't modify fullText - it's already accumulated from previous chunks
+          // The <END> chunk is just metadata
           isComplete = true;
         } else {
           fullText += chunk;
