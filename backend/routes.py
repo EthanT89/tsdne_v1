@@ -118,8 +118,8 @@ def register_routes(app):
                 )
                 db.session.add(ai_message)
                 db.session.commit()
-                
-                yield f"\n<END>{full_text}"
+
+                yield f"\n<END><CONV_ID>{conversation.id}"
             
             return Response(stream_with_context(generate_stream()), content_type="text/plain")
         

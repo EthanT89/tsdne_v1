@@ -136,7 +136,12 @@ What's next?`,
         if (done) break;
         const chunk = decoder.decode(value, { stream: true });
         if (chunk.includes("<END>")) {
-          fullText = chunk.replace("<END>", "").replace(/ <BREAK> /g, "\n\n");
+          // Extract conversation ID from response
+          const convIdMatch = chunk.match(/<CONV_ID>(\d+)/);
+          if (convIdMatch) {
+            newConversationId = parseInt(convIdMatch[1]);
+          }
+          fullText = chunk.replace("<END>", "").replace(/<CONV_ID>\d+/, "").replace(/ <BREAK> /g, "\n\n");
           isComplete = true;
         } else {
           fullText += chunk;
@@ -149,9 +154,9 @@ What's next?`,
         await new Promise((resolve) => setTimeout(resolve, streamSpeed));
       }
 
-      // If this was a new conversation, we need to get the conversation ID
-      // This is a simplified approach - in production, you'd return it from the API
-      if (!newConversationId) {
+      // Update conversation ID if this was a new conversation
+      if (newConversationId && newConversationId !== conversationId) {
+        setConversationId(newConversationId);
         setRefreshTrigger((prev) => prev + 1);
       }
     } catch (err) {
