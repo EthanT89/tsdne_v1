@@ -38,16 +38,22 @@ Constraints:
 def construct_system_prompt(conversation_id=None):
     """Construct system prompt, optionally including conversation history"""
     prompt = SYSTEM_PROMPT_BASE
-    
+
     if conversation_id:
         # Get recent conversation history (last 10 messages)
         messages = Message.query.filter_by(conversation_id=conversation_id).order_by(Message.created_at.desc()).limit(10).all()
+
+        # DEBUG: Log what messages were found
+        print(f"DEBUG construct_system_prompt: Found {len(messages)} messages for conversation {conversation_id}")
+        for msg in messages:
+            print(f"  - Message ID {msg.id}, Conv ID {msg.conversation_id}, Role: {msg.role}, Text: {msg.text[:50]}...")
+
         if messages:
             prompt += "\n\nRecent conversation history:\n"
             for msg in reversed(messages):
                 role = "Player" if msg.role == "player" else "AI"
                 prompt += f"{role}: {msg.text[:100]}...\n"
-    
+
     return prompt
 
 def register_routes(app):
@@ -90,7 +96,14 @@ def register_routes(app):
             
             # Construct system prompt with conversation history
             system_prompt = construct_system_prompt(conversation.id)
-            
+
+            # DEBUG: Log what's being sent to OpenAI
+            print(f"\n=== DEBUG: Conversation ID: {conversation.id} ===")
+            print(f"System prompt length: {len(system_prompt)} chars")
+            print(f"System prompt preview:\n{system_prompt[:500]}...")
+            print(f"User input: {user_input}")
+            print("=== END DEBUG ===\n")
+
             # OpenAI API streaming response
             def generate_stream():
                 response = client.chat.completions.create(
